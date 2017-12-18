@@ -1,0 +1,48 @@
+<!doctype html>
+<html manifest="../cache.manifest">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    <title>{% block title %}My Praise{% endblock %}</title>
+    {% block head %}
+    <link rel="dns-prefetch" href="https://cdn.bootcss.com/">
+    <script src="https://cdn.bootcss.com/lazyload/2.0.3/lazyload-min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/axios/0.17.1/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/x-tag/1.5.11/x-tag-core.js"></script>
+    <!-- 使用pjax 完成spa -->
+    <script src="https://cdn.bootcss.com/jquery.pjax/2.0.1/jquery.pjax.min.js"></script>
+    <!-- localforage离线缓存 -->
+    <script src="https://cdn.bootcss.com/localforage/1.5.5/localforage.min.js"></script>
+    {% endblock %} {% block styles %}{% endblock %}
+</head>
+
+<body>
+    <a href="/index/star">星星组件</a>
+    <a href="/index/thumb">大拇指点赞组件</a>
+    <div id="contentBox">
+        {% block content %}{% endblock %}
+    </div>
+    <script type="text/javascript">
+    //pjax做spa
+    $(document).pjax('a', '#contentBox');
+    //广告缓存
+    localforage.getItem('advertising', function(err, value) {
+        if (value == null) { //如果缓存中没有几去拿
+            $.ajax({
+                url: '/index/adv',
+                success: function(data) {
+                    localforage.setItem('advertising', data); //存储到浏览器
+                    $('body').prepend(data);
+                }
+            })
+        } else {
+            $('body').prepend(value);
+        }
+    });
+    </script>
+</body>
+{% block script %}{% endblock %}
+
+</html>
